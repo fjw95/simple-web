@@ -8,6 +8,21 @@ import (
 	"strings"
 )
 
+type MyMux struct {
+}
+
+func (p *MyMuxxxx) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path == "/" {
+		sayhelloName(w, r)
+		return
+	} else if r.URL.Path == "/login" {
+		login(w, r)
+		return
+	}
+	http.NotFound(w, r)
+	return
+
+}
 func sayhelloName(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() //Parse	url	parameters	passed,	then	parse	the	response	packet	for	the	POST	body	(request	body)
 	//	attention:	If	you	do	not	call	ParseForm	method,	the	following	data	can	not	be	obtained	form
@@ -24,7 +39,7 @@ func sayhelloName(w http.ResponseWriter, r *http.Request) {
 func login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("method:", r.Method) //get	request	method
 	if r.Method == "GET" {
-		t, _ := template.ParseFiles("/home/fiky/work/src/simpleweb.com/simple/web/server/login.html")
+		t, _ := template.ParseFiles("/home/fiky/work/src/github.com/fjw95/simple-web/login.html")
 		t.Execute(w, nil)
 	} else {
 		r.ParseForm()
@@ -34,9 +49,8 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func main() {
-	http.HandleFunc("/", sayhelloName) //	setting	router	rule
-	http.HandleFunc("/login", login)
-	err := http.ListenAndServe(":8080", nil) //	setting	listening	port
+	mux := &MyMux{}
+	err := http.ListenAndServe(":8080", mux) //	setting	listening	port
 	if err != nil {
 		log.Fatal("ListenAndServe:	", err)
 	}
